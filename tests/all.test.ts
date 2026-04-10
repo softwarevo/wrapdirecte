@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { loginTest } from './login.test';
 import { reloginTest } from './relogin.test';
 import { selectAccountTest } from './selectAccount.test';
-import { gradesTest } from './grades.test';
 import { messagingTest } from './messaging.test';
 import { timetableTest } from './timetable.test';
 import { absencesTest } from './absences.test';
