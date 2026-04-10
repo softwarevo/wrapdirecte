@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import { loginTest } from './login.test';
-import { selectAccountTest } from './selectAccount.test';
 import { timetableTest } from './timetable.test';
 import { absencesTest } from './absences.test';
 import { timelineTest } from './timeline.test';
