@@ -36,7 +36,7 @@ export class SettingsModule extends BaseModule {
     const loginId = idLogin ?? this.studentLoginId;
     const response = await this.http.request<any>(
       'POST',
-      `/logins/${this.studentLoginId}.awp`,
+      `/logins/${loginId}.awp`,
       {},
       { verbe: 'get' }
     );
