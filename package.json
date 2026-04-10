@@ -1,0 +1,38 @@
+{
+  "name": "wrapdirecte",
+  "version": "0.1.0",
+  "description": "The ULTIMATE wrapper for EcoleDirecte's private API.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "ts-node tests/all.test.ts",
+    "test-login": "ts-node tests/runner.ts login",
+    "test-relogin": "ts-node tests/runner.ts relogin",
+    "test-selectAccount": "ts-node tests/runner.ts selectAccount",
+    "test-homework": "ts-node tests/runner.ts homework",
+    "test-grades": "ts-node tests/runner.ts grades",
+    "test-messaging": "ts-node tests/runner.ts messaging",
+    "test-timetable": "ts-node tests/runner.ts timetable",
+    "test-absences": "ts-node tests/runner.ts absences",
+    "test-timeline": "ts-node tests/runner.ts timeline",
+    "test-documents": "ts-node tests/runner.ts documents",
+    "test-cloud": "ts-node tests/runner.ts cloud",
+    "test-settings": "ts-node tests/runner.ts settings"
+  },
+  "keywords": [
+    "ecoledirecte",
+    "api",
+    "wrapper",
+    "typescript",
+    "education"
+  ],
+  "author": "evo",
+  "license": "EUPL-1.2",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "dotenv": "^16.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}
