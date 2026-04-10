@@ -1,4 +1,4 @@
-import { HttpClient, API_VERSION } from './utils/http';
+import { HttpClient } from './utils/http';
 import { RawAccount, CleanAccount, LoginResult } from './types/account';
 import { cleanAccount } from './utils/cleaning';
 import { EcoleDirecteAccountTypeError, EcoleDirecteError } from './utils/errors';
