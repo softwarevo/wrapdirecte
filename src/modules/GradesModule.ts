@@ -26,6 +26,31 @@ export interface CleanPeriod {
   isClosed: boolean;
 }
 
+export interface CleanCompetence {
+  id: number | string;
+  competenceId: number | string;
+  knowledgeId: number | string;
+  elementProgramId: number | string;
+  title: string;
+  description: string;
+  subjectCode: string;
+  subjectLabel: string;
+  date: Date | null;
+  value: string;
+  outOf: string;
+  coefficient: number;
+  isLetter: boolean;
+  isSignificant: boolean;
+  comment: string;
+  periodCode: string;
+  noteId?: number | string;
+  noteTitle?: string;
+  noteDate?: string;
+  noteValue?: string;
+  noteOutOf?: string;
+  noteCoefficient?: number;
+}
+
 export class GradesModule extends BaseModule {
   async getGrades(year: string = '', options: BaseModuleOptions = {}): Promise<any> {
     const response = await this.http.request<any>(
@@ -37,11 +62,57 @@ export class GradesModule extends BaseModule {
 
     if (options.raw) return response.data;
 
-    const grades = (response.data.notes || []).map((n: any) => this.cleanGrade(n));
+    const notes = response.data.notes || [];
+    const grades = notes.map((n: any) => this.cleanGrade(n));
     const periods = (response.data.periodes || []).map((p: any) => this.cleanPeriod(p));
     const settings = this.cleanSettings(response.data.parametrage || {});
+    const competencies = [
+      ...this.cleanCompetencies(
+        response.data.competences ||
+        response.data.competences?.competences ||
+        response.data.competence ||
+        []
+      ),
+      ...this.extractCompetenciesFromNotes(notes),
+    ];
 
-    return { grades, periods, settings };
+    return { grades, periods, settings, competencies };
+  }
+
+  private cleanCompetencies(raw: any): CleanCompetence[] {
+    return this.normalizeCompetenciesInput(raw).map((c: any) => this.cleanCompetence(c));
+  }
+
+  private extractCompetenciesFromNotes(notes: any[]): CleanCompetence[] {
+    return notes.flatMap((note: any) => {
+      const noteFields = {
+        noteId: note.id,
+        noteTitle: note.devoir,
+        noteDate: note.date,
+        noteValue: note.valeur,
+        noteOutOf: note.noteSur,
+        noteCoefficient: note.coef,
+      };
+
+      return (note.elementsProgramme || []).map((element: any) =>
+        this.cleanCompetence({
+          ...element,
+          ...noteFields,
+          codeMatiere: note.codeMatiere,
+          libelleMatiere: note.libelleMatiere,
+          codePeriode: note.codePeriode,
+          date: element.date || note.date,
+        })
+      );
+    });
+  }
+
+  private normalizeCompetenciesInput(raw: any): any[] {
+    if (!raw) return [];
+    if (Array.isArray(raw)) return raw;
+    if (Array.isArray(raw.competences)) return raw.competences;
+    if (Array.isArray(raw.liste)) return raw.liste;
+    return [];
   }
 
   private cleanGrade(n: any): CleanGrade {
@@ -58,6 +129,28 @@ export class GradesModule extends BaseModule {
       isSignificant: !n.nonSignificatif,
       comment: n.commentaire || '',
       periodCode: n.codePeriode,
+    };
+  }
+
+  private cleanCompetence(c: any): CleanCompetence {
+    return {
+      id: c.id || c.idCompetence || c.idNote || c.idElemProg || '',
+      competenceId: c.idCompetence || '',
+      knowledgeId: c.idConnaissance || '',
+      elementProgramId: c.idElemProg || '',
+      title: c.libelleCompetence || c.libelle || c.competence || c.nom || '',
+      description: c.descriptif || c.description || '',
+      subjectCode: c.codeMatiere || c.codeMat || c.code || '',
+      subjectLabel: c.libelleMatiere || c.libelle || c.matiere || '',
+      date: normalizeDate(c.date || c.dateEvaluation || c.dateDebut),
+      value: c.valeur || c.note || c.resultat || '',
+      outOf: c.noteSur || c.outOf || '',
+      coefficient: c.coef || c.coefficient || 0,
+      isLetter: !!c.enLettre || false,
+      isSignificant: !(c.nonSignificatif || c.nonSignificatifEvaluation),
+      comment: c.commentaire || c.comment || '',
+      periodCode: c.codePeriode || c.periode || '',
+      noteId: c.noteId,
     };
   }
 
