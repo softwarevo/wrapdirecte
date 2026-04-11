@@ -4,8 +4,12 @@
   "description": "The ULTIMATE wrapper for EcoleDirecte's private API.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "ts-node tests/all.test.ts",
     "test-login": "ts-node tests/runner.ts login",
     "test-relogin": "ts-node tests/runner.ts relogin",
