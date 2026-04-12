@@ -1,7 +1,8 @@
 import { EcoleDirecteAPIError } from './errors';
 
 export const API_VERSION = '7.12.1';
-export const USER_AGENT = 'wrapDirecte/Seedling-0.0.0 (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v' + API_VERSION; //Vous pouvez remplacer wrapDirecte/Seedling-1.0.0 par votre app et sa version
+const DEFAULT_APP = 'wrapDirecte/Seedling-0.1.2';
+const buildUserAgent = (app: string) => `${app} (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v${API_VERSION}`;
 export const BASE_URL = 'https://api.ecoledirecte.com/v3';
 
 export interface APIResponse<T> {
@@ -15,6 +16,11 @@ export interface APIResponse<T> {
 export class HttpClient {
   private token: string | null = null;
   private gtk: string | null = null;
+  private userAgent: string;
+
+  constructor(userAgent: string) {
+    this.userAgent = userAgent;
+  }
 
   setToken(token: string | null) {
     this.token = token;
@@ -37,7 +43,7 @@ export class HttpClient {
     }
 
     const headers: Record<string, string> = {
-      'User-Agent': USER_AGENT,
+      'User-Agent': this.userAgent,
       'Content-Type': 'application/x-www-form-urlencoded',
     };
 
@@ -88,13 +94,17 @@ export class HttpClient {
     return this.token;
   }
 
+  getUserAgent(): string {
+    return this.userAgent;
+  }
+
   async getGTK(): Promise<void> {
     const path = '/login.awp';
     const url = 'https://api.ecoledirecte.com/v3' + path + '?gtk=1&v=' + API_VERSION;
 
     const response = await fetch(url, {
       method: 'GET',
-      headers: { 'User-Agent': USER_AGENT }
+      headers: { 'User-Agent': this.userAgent }
     });
 
     const setCookies = (response.headers as any).getSetCookie ? (response.headers as any).getSetCookie() : [response.headers.get('set-cookie')].filter(Boolean);

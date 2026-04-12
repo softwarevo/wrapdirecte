@@ -1,5 +1,4 @@
 import { BaseModule, BaseModuleOptions } from './BaseModule';
-import { USER_AGENT } from '../utils/http';
 
 export interface CleanCloudNode {
   type: 'file' | 'folder';
@@ -133,7 +132,7 @@ export class CloudModule extends BaseModule {
     const response = await fetch(url.toString(), {
       method: 'POST',
       headers: {
-        'User-Agent': USER_AGENT,
+        'User-Agent': this.http.getUserAgent(),
         'X-Token': this.http.getToken() || '',
         // Note : On ne définit SURTOUT PAS le Content-Type ici, 
         // fetch le fera automatiquement avec le boundary pour le FormData
@@ -169,7 +168,7 @@ export class CloudModule extends BaseModule {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'User-Agent': USER_AGENT,
+        'User-Agent': this.http.getUserAgent(),
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: formBody,

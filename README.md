@@ -37,6 +37,10 @@ const homework = await client.homework?.getHomework('2026-04-08');
 console.log(homework);
 ```
 
+> [!IMPORTANT]
+> The user-agent uses, by default, the name and version of your project from package.json.
+> You can also manually override this when doing `new WrapDirecte` like this : `new WrapDirecte({ appName: 'MyApp', appVersion: '1.2.3' })`
+
 ## Documentation
 
 ### Authentication Methods

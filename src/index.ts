@@ -1,8 +1,10 @@
-import { HttpClient } from './utils/http';
+import { HttpClient, API_VERSION } from './utils/http';
 import { RawAccount, CleanAccount, LoginResult } from './types/account';
 import { cleanAccount } from './utils/cleaning';
 import { EcoleDirecteAccountTypeError, EcoleDirecteError } from './utils/errors';
 import { encodeBase64, decodeBase64 } from './utils/base64';
+
+const buildUserAgent = (app: string) => `${app} (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v${API_VERSION}`;
 
 import { HomeworkModule } from './modules/HomeworkModule';
 import { MessagingModule } from './modules/MessagingModule';
@@ -13,6 +15,11 @@ import { TimelineModule } from './modules/TimelineModule';
 import { DocumentsModule } from './modules/DocumentsModule';
 import { CloudModule } from './modules/CloudModule';
 import { SettingsModule } from './modules/SettingsModule';
+
+interface WrapDirecteOptions {
+  appName?: string;
+  appVersion?: string;
+}
 
 export class WrapDirecte {
   private http: HttpClient;
@@ -35,8 +42,21 @@ export class WrapDirecte {
   public cloud?: CloudModule;
   public settings?: SettingsModule;
 
-  constructor() {
-    this.http = new HttpClient();
+  constructor(options?: WrapDirecteOptions) {
+    let app = 'wrapDirecte/Seedling-0.1.2';
+    if (options?.appName) {
+      app = `${options.appName}/${options.appVersion || '1.0.0'}`;
+    } else {
+      try {
+        const packageJson = require(process.cwd() + '/package.json');
+        const name = packageJson.name || 'wrapDirecte';
+        const version = packageJson.version || 'Seedling-0.1.2';
+        app = `${name}/${version}`;
+      } catch {
+        // use default
+      }
+    }
+    this.http = new HttpClient(buildUserAgent(app));
   }
 
   get isAuthenticated(): boolean {

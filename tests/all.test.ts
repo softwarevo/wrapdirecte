@@ -6,6 +6,8 @@ import { timelineTest } from './timeline.test';
 import { documentsTest } from './documents.test';
 import { cloudTest } from './cloud.test';
 import { settingsTest } from './settings.test';
+import { gradesTest } from './grades.test';
+import { messagingTest } from './messaging.test';
 
 async function run() {
   const client = await loginTest();
