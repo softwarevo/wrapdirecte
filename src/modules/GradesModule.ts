@@ -132,9 +132,22 @@ export class GradesModule extends BaseModule {
     };
   }
 
+  /**
+   * Resolve a stable competence identifier from heterogeneous upstream payloads.
+   * Precedence order is:
+   * 1) c.id
+   * 2) c.idCompetence
+   * 3) c.idNote
+   * 4) c.idElemProg
+   * 5) ''
+   */
+  private resolveCompetenceId(c: any): string {
+    return c.id || c.idCompetence || c.idNote || c.idElemProg || '';
+  }
+
   private cleanCompetence(c: any): CleanCompetence {
     return {
-      id: c.id || c.idCompetence || c.idNote || c.idElemProg || '',
+      id: this.resolveCompetenceId(c),
       competenceId: c.idCompetence || '',
       knowledgeId: c.idConnaissance || '',
       elementProgramId: c.idElemProg || '',
