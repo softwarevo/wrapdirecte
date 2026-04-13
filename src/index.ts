@@ -47,13 +47,15 @@ export class WrapDirecte {
     if (options?.appName) {
       app = `${options.appName}/${options.appVersion || '1.0.0'}`;
     } else {
-      try {
-        const packageJson = require(process.cwd() + '/package.json');
-        const name = packageJson.name || 'wrapDirecte';
-        const version = packageJson.version || 'Seedling-0.1.2';
-        app = `${name}/${version}`;
-      } catch {
-        // use default
+      if (typeof process !== 'undefined' && typeof require !== 'undefined') {
+        try {
+          const packageJson = require(process.cwd() + '/package.json');
+          const name = packageJson.name || 'wrapDirecte';
+          const version = packageJson.version || 'Seedling-0.1.2';
+          app = `${name}/${version}`;
+        } catch {
+          // use default
+        }
       }
     }
     this.http = new HttpClient(buildUserAgent(app));
