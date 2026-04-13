@@ -1,10 +1,8 @@
-import { HttpClient, API_VERSION } from './utils/http';
+import { HttpClient, API_VERSION, buildUserAgent } from './utils/http';
 import { RawAccount, CleanAccount, LoginResult } from './types/account';
 import { cleanAccount } from './utils/cleaning';
 import { EcoleDirecteAccountTypeError, EcoleDirecteError } from './utils/errors';
 import { encodeBase64, decodeBase64 } from './utils/base64';
-
-const buildUserAgent = (app: string) => `${app} (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v${API_VERSION}`;
 
 import { HomeworkModule } from './modules/HomeworkModule';
 import { MessagingModule } from './modules/MessagingModule';
