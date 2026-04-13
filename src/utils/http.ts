@@ -33,7 +33,7 @@ export class HttpClient {
   async request<T>(
     method: 'GET' | 'POST',
     path: string,
-    body: any = null,
+    body: unknown = null,
     params: Record<string, string> = {}
   ): Promise<APIResponse<T>> {
     const url = new URL(BASE_URL + path);
