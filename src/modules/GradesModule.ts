@@ -151,6 +151,11 @@ export class GradesModule extends BaseModule {
       comment: c.commentaire || c.comment || '',
       periodCode: c.codePeriode || c.periode || '',
       noteId: c.noteId,
+      noteTitle: c.noteTitle || c.noteLibelle || '',
+      noteDate: normalizeDate(c.noteDate || c.dateNote),
+      noteValue: c.noteValue || c.valeurNote || '',
+      noteOutOf: c.noteOutOf || c.noteSur || '',
+      noteCoefficient: c.noteCoefficient || c.coefNote || 0,
     };
   }
 
