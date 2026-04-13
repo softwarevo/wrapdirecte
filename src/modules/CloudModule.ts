@@ -10,7 +10,7 @@ export interface CleanCloudNode {
 }
 
 export class CloudModule extends BaseModule {
-  async getCloudFiles(depth: number = 3, options: BaseModuleOptions = {}): Promise<any> {
+  async getCloudFiles(depth: number = 3, options: BaseModuleOptions = {}): Promise<CleanCloudNode[] | any> {
     const response = await this.http.request<any>(
       'POST',
       `/cloud/E/${this.studentId}.awp`,
