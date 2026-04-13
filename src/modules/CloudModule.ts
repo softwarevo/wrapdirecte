@@ -113,29 +113,29 @@ export class CloudModule extends BaseModule {
 
     const formData = new FormData();
 
-    // 1. Préparation du Blob de manière compatible Node/Browser
+    // 1. Prepare the Blob in a Node/Browser-compatible way
     let fileToAppend: Blob;
 
     if (fileData instanceof Blob) {
-        // Si c'est déjà un Blob, on l'utilise directement
+        // If it is already a Blob, use it directly
         fileToAppend = fileData;
     } else {
-        // Si c'est un Buffer (Node.js), on le convertit en Uint8Array pour le constructeur Blob
-        // Le cast "as Buffer" lève l'ambiguïté TS2769
+        // If it is a Buffer (Node.js), convert it to Uint8Array for the Blob constructor
+        // The "as Buffer" cast resolves TS2769 ambiguity
         fileToAppend = new Blob([new Uint8Array(fileData as Buffer)]);
     }
 
-    // 2. Ajout au FormData (on utilise la variable nettoyée 'fileToAppend')
+    // 2. Add to FormData (using the normalized 'fileToAppend' variable)
     formData.append('file', fileToAppend, fileName);
 
-    // 3. Envoi de la requête
+    // 3. Send the request
     const response = await fetch(url.toString(), {
       method: 'POST',
       headers: {
         'User-Agent': this.http.getUserAgent(),
         'X-Token': this.http.getToken() || '',
-        // Note : On ne définit SURTOUT PAS le Content-Type ici, 
-        // fetch le fera automatiquement avec le boundary pour le FormData
+        // Note: Do NOT set Content-Type here,
+        // fetch will set it automatically with the FormData boundary
       },
       body: formData,
     });
