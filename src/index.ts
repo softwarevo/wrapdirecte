@@ -175,6 +175,8 @@ export class WrapDirecte {
 
   logout(): void {
     this.http.setToken(null);
+    this.currentUsername = '';
+    this.currentPassword = '';
     this.rawAccounts = [];
     this.studentRawAccounts = [];
     this.studentAccounts = [];
