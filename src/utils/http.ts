@@ -128,7 +128,7 @@ export class HttpClient {
       }
     }
 
-    if (!this.gtk && typeof window !== 'undefined' && document.cookie) {
+    if (!this.gtk && typeof window !== 'undefined' && typeof document !== 'undefined' && document.cookie) {
       // Browser fallback (if cookies are somehow readable)
       const match = document.cookie.match(/GTK=([^;]+)/);
       if (match) {
