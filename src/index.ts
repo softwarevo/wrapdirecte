@@ -3,6 +3,7 @@ import { RawAccount, CleanAccount, LoginResult } from './types/account';
 import { cleanAccount } from './utils/cleaning';
 import { EcoleDirecteAccountTypeError, EcoleDirecteError } from './utils/errors';
 import { encodeBase64, decodeBase64 } from './utils/base64';
+import * as path from 'path';
 
 import { HomeworkModule } from './modules/HomeworkModule';
 import { MessagingModule } from './modules/MessagingModule';
@@ -47,7 +48,7 @@ export class WrapDirecte {
     } else {
       if (typeof process !== 'undefined' && typeof require !== 'undefined') {
         try {
-          const packageJson = require(process.cwd() + '/package.json');
+          const packageJson = require(path.join(process.cwd(), 'package.json'));
           const name = packageJson.name || 'wrapDirecte';
           const version = packageJson.version || 'Seedling-0.1.2';
           app = `${name}/${version}`;
