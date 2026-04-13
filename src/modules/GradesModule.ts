@@ -26,6 +26,21 @@ export interface CleanPeriod {
   isClosed: boolean;
 }
 
+export interface CleanGradesResponse {
+  grades: CleanGrade[];
+  periods: CleanPeriod[];
+  settings: any;
+  competencies: CleanCompetence[];
+}
+
+export interface RawGradesOptions extends BaseModuleOptions {
+  raw: true;
+}
+
+export interface CleanGradesOptions extends BaseModuleOptions {
+  raw?: false;
+}
+
 export interface CleanCompetence {
   id: number | string;
   competenceId: number | string;
@@ -52,7 +67,12 @@ export interface CleanCompetence {
 }
 
 export class GradesModule extends BaseModule {
-  async getGrades(year: string = '', options: BaseModuleOptions = {}): Promise<any> {
+  async getGrades(year: string, options: RawGradesOptions): Promise<any>;
+  async getGrades(year?: string, options?: CleanGradesOptions): Promise<CleanGradesResponse>;
+  async getGrades(
+    year: string = '',
+    options: BaseModuleOptions = {}
+  ): Promise<CleanGradesResponse | any> {
     const response = await this.http.request<any>(
       'POST',
       `/eleves/${this.studentId}/notes.awp`,
