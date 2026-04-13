@@ -26,6 +26,21 @@ export interface CleanPeriod {
   isClosed: boolean;
 }
 
+export interface CleanGradesResponse {
+  grades: CleanGrade[];
+  periods: CleanPeriod[];
+  settings: any;
+  competencies: CleanCompetence[];
+}
+
+export interface RawGradesOptions extends BaseModuleOptions {
+  raw: true;
+}
+
+export interface CleanGradesOptions extends BaseModuleOptions {
+  raw?: false;
+}
+
 export interface CleanCompetence {
   id: number | string;
   competenceId: number | string;
@@ -52,7 +67,12 @@ export interface CleanCompetence {
 }
 
 export class GradesModule extends BaseModule {
-  async getGrades(year: string = '', options: BaseModuleOptions = {}): Promise<any> {
+  async getGrades(year: string, options: RawGradesOptions): Promise<any>;
+  async getGrades(year?: string, options?: CleanGradesOptions): Promise<CleanGradesResponse>;
+  async getGrades(
+    year: string = '',
+    options: BaseModuleOptions = {}
+  ): Promise<CleanGradesResponse | any> {
     const response = await this.http.request<any>(
       'POST',
       `/eleves/${this.studentId}/notes.awp`,
@@ -132,9 +152,22 @@ export class GradesModule extends BaseModule {
     };
   }
 
+  /**
+   * Resolve a stable competence identifier from heterogeneous upstream payloads.
+   * Precedence order is:
+   * 1) c.id
+   * 2) c.idCompetence
+   * 3) c.idNote
+   * 4) c.idElemProg
+   * 5) ''
+   */
+  private resolveCompetenceId(c: any): string {
+    return c.id || c.idCompetence || c.idNote || c.idElemProg || '';
+  }
+
   private cleanCompetence(c: any): CleanCompetence {
     return {
-      id: c.id || c.idCompetence || c.idNote || c.idElemProg || '',
+      id: this.resolveCompetenceId(c),
       competenceId: c.idCompetence || '',
       knowledgeId: c.idConnaissance || '',
       elementProgramId: c.idElemProg || '',
@@ -151,6 +184,11 @@ export class GradesModule extends BaseModule {
       comment: c.commentaire || c.comment || '',
       periodCode: c.codePeriode || c.periode || '',
       noteId: c.noteId,
+      noteTitle: c.noteTitle || c.noteLibelle || '',
+      noteDate: normalizeDate(c.noteDate || c.dateNote),
+      noteValue: c.noteValue || c.valeurNote || '',
+      noteOutOf: c.noteOutOf || c.noteSur || '',
+      noteCoefficient: c.noteCoefficient || c.coefNote || 0,
     };
   }
 
