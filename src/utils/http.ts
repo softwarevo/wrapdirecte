@@ -100,14 +100,23 @@ export class HttpClient {
 
   async getGTK(): Promise<void> {
     const path = '/login.awp';
-    const url = 'https://api.ecoledirecte.com/v3' + path + '?gtk=1&v=' + API_VERSION;
+    const url = BASE_URL + path + '?gtk=1&v=' + API_VERSION;
 
     const response = await fetch(url, {
       method: 'GET',
       headers: { 'User-Agent': this.userAgent }
     });
 
-    const setCookies = (response.headers as any).getSetCookie ? (response.headers as any).getSetCookie() : [response.headers.get('set-cookie')].filter(Boolean);
+    interface HeadersWithSetCookie extends Headers {
+      getSetCookie(): string[];
+    }
+
+    const hasGetSetCookie = (headers: Headers): headers is HeadersWithSetCookie =>
+      typeof (headers as HeadersWithSetCookie).getSetCookie === 'function';
+
+    const setCookies = hasGetSetCookie(response.headers)
+      ? response.headers.getSetCookie()
+      : [response.headers.get('set-cookie')].filter((cookie): cookie is string => Boolean(cookie));
 
     if (setCookies.length > 0) {
       for (const cookie of setCookies) {
