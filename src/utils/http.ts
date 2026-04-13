@@ -18,7 +18,7 @@ export class HttpClient {
   private gtk: string | null = null;
   private userAgent: string;
 
-  constructor(userAgent: string) {
+  constructor(userAgent: string = buildUserAgent(DEFAULT_APP)) {
     this.userAgent = userAgent;
   }
 
