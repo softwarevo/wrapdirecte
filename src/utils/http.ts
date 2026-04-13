@@ -2,7 +2,7 @@ import { EcoleDirecteAPIError } from './errors';
 
 export const API_VERSION = '7.12.1';
 const DEFAULT_APP = 'wrapDirecte/Seedling-0.1.2';
-const buildUserAgent = (app: string) => `${app} (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v${API_VERSION}`;
+export const buildUserAgent = (app: string) => `${app} (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v${API_VERSION}`;
 export const BASE_URL = 'https://api.ecoledirecte.com/v3';
 
 export interface APIResponse<T> {
@@ -107,16 +107,7 @@ export class HttpClient {
       headers: { 'User-Agent': this.userAgent }
     });
 
-    interface HeadersWithSetCookie extends Headers {
-      getSetCookie(): string[];
-    }
-
-    const hasGetSetCookie = (headers: Headers): headers is HeadersWithSetCookie =>
-      typeof (headers as HeadersWithSetCookie).getSetCookie === 'function';
-
-    const setCookies = hasGetSetCookie(response.headers)
-      ? response.headers.getSetCookie()
-      : [response.headers.get('set-cookie')].filter((cookie): cookie is string => Boolean(cookie));
+    const setCookies = [response.headers.get('set-cookie')].filter((cookie): cookie is string => Boolean(cookie));
 
     if (setCookies.length > 0) {
       for (const cookie of setCookies) {

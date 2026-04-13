@@ -60,7 +60,7 @@ export interface CleanCompetence {
   periodCode: string;
   noteId?: number | string;
   noteTitle?: string;
-  noteDate?: string;
+  noteDate?: Date | null;
   noteValue?: string;
   noteOutOf?: string;
   noteCoefficient?: number;
