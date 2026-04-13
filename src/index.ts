@@ -71,7 +71,12 @@ export class WrapDirecte {
     this.currentUsername = username;
     this.currentPassword = password;
 
-    await this.http.getGTK();
+    try {
+      await this.http.getGTK();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new EcoleDirecteError(`Initial authentication setup failed while fetching GTK: ${message}`);
+    }
 
     const response = await this.http.request<any>('POST', '/login.awp', {
       identifiant: username,
