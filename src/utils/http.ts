@@ -70,7 +70,7 @@ export class HttpClient {
     });
 
     if (!response.ok) {
-      throw new EcoleDirecteAPIError('HTTP Error: ' + response.status + ' ' + response.statusText, response.status);
+      throw new EcoleDirecteAPIError(`HTTP Error: ${response.status} ${response.statusText}`, response.status);
     }
 
     const headerToken = response.headers.get('x-token');
