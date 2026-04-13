@@ -18,7 +18,7 @@ export class HttpClient {
   private gtk: string | null = null;
   private userAgent: string;
 
-  constructor(userAgent: string) {
+  constructor(userAgent: string = buildUserAgent(DEFAULT_APP)) {
     this.userAgent = userAgent;
   }
 
@@ -33,7 +33,7 @@ export class HttpClient {
   async request<T>(
     method: 'GET' | 'POST',
     path: string,
-    body: any = null,
+    body: unknown = null,
     params: Record<string, string> = {}
   ): Promise<APIResponse<T>> {
     const url = new URL(BASE_URL + path);
@@ -70,7 +70,7 @@ export class HttpClient {
     });
 
     if (!response.ok) {
-      throw new EcoleDirecteAPIError('HTTP Error: ' + response.status + ' ' + response.statusText, response.status);
+      throw new EcoleDirecteAPIError(`HTTP Error: ${response.status} ${response.statusText}`, response.status);
     }
 
     const headerToken = response.headers.get('x-token');
@@ -128,7 +128,7 @@ export class HttpClient {
       }
     }
 
-    if (!this.gtk && typeof window !== 'undefined' && document.cookie) {
+    if (!this.gtk && typeof window !== 'undefined' && typeof document !== 'undefined' && document.cookie) {
       // Browser fallback (if cookies are somehow readable)
       const match = document.cookie.match(/GTK=([^;]+)/);
       if (match) {
