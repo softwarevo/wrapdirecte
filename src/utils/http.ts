@@ -100,7 +100,7 @@ export class HttpClient {
 
   async getGTK(): Promise<void> {
     const path = '/login.awp';
-    const url = 'https://api.ecoledirecte.com/v3' + path + '?gtk=1&v=' + API_VERSION;
+    const url = BASE_URL + path + '?gtk=1&v=' + API_VERSION;
 
     const response = await fetch(url, {
       method: 'GET',
