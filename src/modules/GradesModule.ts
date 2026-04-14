@@ -26,10 +26,17 @@ export interface CleanPeriod {
   isClosed: boolean;
 }
 
+export interface CleanSettings {
+  evaluationLabels: Record<string, string>;
+  evaluationColors: Record<string, string>;
+  displayAverage: boolean;
+  displayGrades: boolean;
+}
+
 export interface CleanGradesResponse {
   grades: CleanGrade[];
   periods: CleanPeriod[];
-  settings: any;
+  settings: CleanSettings;
   competencies: CleanCompetence[];
 }
 
