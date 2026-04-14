@@ -48,7 +48,7 @@ export class WrapDirecte {
     } else {
       if (typeof process !== 'undefined' && typeof require !== 'undefined') {
         try {
-          const packageJson = require(path.join(process.cwd(), 'package.json'));
+          const packageJson = require(path.resolve(__dirname, '..', 'package.json'));
           const name = packageJson.name || 'wrapDirecte';
           const version = packageJson.version || 'Seedling-0.1.2';
           app = `${name}/${version}`;
