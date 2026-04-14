@@ -441,7 +441,7 @@ Available test scripts:
 See the [project wiki](https://github.com/softwarevo/wrapdirecte/wiki).
 
 ## License
-wrapDirecte is licensed under the [EUPL 1.2](https://eupl.eu/), allowing you to use, modify, and distribute it for both commercial and non-commercial purposes, provided that the license terms are respected. See the [LICENSE](/LICENSE) file for more details.
+wrapDirecte is licensed under the [LGPL 3.0](https://www.gnu.org/licenses/lgpl-3.0.fr.html#license-text), allowing you to use, modify, and distribute it for both commercial and non-commercial purposes, provided that the license terms are respected. See the [LICENSE](/LICENSE) file for more details.
 
 ## Legal notice
 **YOU** are responsible for everything you made wrapDirecte process. Don't use wrapDirecte with accounts you don't have the permission to use.
