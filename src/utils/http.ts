@@ -2,7 +2,12 @@ import { EcoleDirecteAPIError } from './errors';
 
 export const API_VERSION = '7.12.1';
 const DEFAULT_APP = 'wrapDirecte/Seedling-0.1.2';
-export const buildUserAgent = (app: string) => `${app} (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v${API_VERSION}`;
+/**
+ * Sanitizes a header value by removing newline characters to prevent header injection.
+ */
+const sanitizeHeader = (value: string): string => value.replace(/[\r\n]/g, '').trim();
+
+export const buildUserAgent = (app: string) => `${sanitizeHeader(app)} (iPhone; CPU iPhone OS 26_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/23E246  EDMOBILE v${API_VERSION}`;
 export const BASE_URL = 'https://api.ecoledirecte.com/v3';
 
 export interface APIResponse<T> {
@@ -26,8 +31,31 @@ export class HttpClient {
     this.token = token;
   }
 
-  setGtk(gtk: string) {
+  setGtk(gtk: string | null) {
     this.gtk = gtk;
+  }
+
+  /**
+   * Returns the common headers for API requests, including security tokens.
+   * Values are sanitized to prevent header injection.
+   */
+  getHeaders(customHeaders: Record<string, string> = {}): Record<string, string> {
+    const headers: Record<string, string> = {
+      'User-Agent': this.userAgent,
+      ...customHeaders,
+    };
+
+    if (this.token) {
+      headers['X-Token'] = sanitizeHeader(this.token);
+    }
+
+    if (this.gtk) {
+      const cleanGtk = sanitizeHeader(this.gtk);
+      headers['X-Gtk'] = cleanGtk;
+      headers['Cookie'] = 'GTK=' + cleanGtk;
+    }
+
+    return headers;
   }
 
   async request<T>(
@@ -42,20 +70,9 @@ export class HttpClient {
       url.searchParams.append('v', API_VERSION);
     }
 
-    const headers: Record<string, string> = {
-      'User-Agent': this.userAgent,
+    const headers = this.getHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
-    };
-
-    if (this.token) {
-      headers['X-Token'] = this.token;
-    }
-
-    if (this.gtk) {
-      const cleanGtk = this.gtk.replace(/\r\n/g, '');
-      headers['X-Gtk'] = cleanGtk;
-      headers['Cookie'] = 'GTK=' + cleanGtk;
-    }
+    });
 
     let requestBody: string | undefined;
     if (body !== null) {
