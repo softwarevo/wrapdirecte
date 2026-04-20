@@ -131,12 +131,9 @@ export class CloudModule extends BaseModule {
     // 3. Send the request
     const response = await fetch(url.toString(), {
       method: 'POST',
-      headers: {
-        'User-Agent': this.http.getUserAgent(),
-        'X-Token': this.http.getToken() || '',
-        // Note: Do NOT set Content-Type here,
-        // fetch will set it automatically with the FormData boundary
-      },
+      headers: this.http.getHeaders(),
+      // Note: Do NOT set Content-Type here,
+      // fetch will set it automatically with the FormData boundary
       body: formData,
     });
 
@@ -167,10 +164,9 @@ export class CloudModule extends BaseModule {
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'User-Agent': this.http.getUserAgent(),
+      headers: this.http.getHeaders({
         'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      }),
       body: formBody,
     });
 
