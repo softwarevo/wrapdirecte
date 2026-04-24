@@ -1,0 +1,8 @@
+.github/
+assets/
+tests/
+.env.example
+.gitattributes
+.gitignore
+example.ts
+tsconfig.json
