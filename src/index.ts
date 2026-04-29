@@ -42,7 +42,7 @@ export class WrapDirecte {
   public settings?: SettingsModule;
 
   constructor(options?: WrapDirecteOptions) {
-    let app = 'wrapDirecte/Seedling-0.1.2';
+    let app = 'wrapDirecte/Seedling-0.2.0';
     if (options?.appName) {
       app = `${options.appName}/${options.appVersion || '1.0.0'}`;
     } else {
@@ -50,7 +50,7 @@ export class WrapDirecte {
         try {
           const packageJson = require(path.resolve(__dirname, '..', 'package.json'));
           const name = packageJson.name || 'wrapDirecte';
-          const version = packageJson.version || 'Seedling-0.1.2';
+          const version = packageJson.version || 'Seedling-0.2.0';
           app = `${name}/${version}`;
         } catch {
           // use default
@@ -108,18 +108,9 @@ export class WrapDirecte {
     return this.handleLoginSuccess(response, preferredAccountId);
   }
 
-  async relogin(username: string, password: string, uuid: string): Promise<LoginResult> {
-    const response = await this.http.request<any>('POST', '/login.awp', {
-      identifiant: username,
-      motdepasse: password,
-      isReLogin: true,
-      uuid,
-    }, {});
 
-    return this.handleLoginSuccess(response);
-  }
-
-  async directLogin(username: string, password: string, cn: string, cv: string, uuid: string = ''): Promise<LoginResult> {
+  async directLogin(username: string, password: string, faProof: string, uuid: string = ''): Promise<LoginResult> {
+    const [cn, cv] = decodeBase64(faProof).split(':');
     const response = await this.http.request<any>('POST', '/login.awp', {
       identifiant: username,
       motdepasse: password,
@@ -134,7 +125,7 @@ export class WrapDirecte {
       ],
     }, {});
 
-    return this.handleLoginSuccess(response);
+    return this.handleLoginSuccess(response, undefined, { cn, cv });
   }
 
   async submit2FA(answer: string, uuid: string = ''): Promise<LoginResult> {
@@ -163,7 +154,10 @@ export class WrapDirecte {
       ],
     }, {});
 
-    return this.handleLoginSuccess(finalResponse);
+    return this.handleLoginSuccess(finalResponse, undefined, {
+      cn: challengePostResponse.data.cn,
+      cv: challengePostResponse.data.cv,
+    });
   }
 
   async selectAccount(accountId: number): Promise<CleanAccount> {
@@ -200,7 +194,7 @@ export class WrapDirecte {
     this.settings = undefined;
   }
 
-  private handleLoginSuccess(response: any, preferredAccountId?: number): LoginResult {
+  private handleLoginSuccess(response: any, preferredAccountId?: number, fa?: { cn: string; cv: string }): LoginResult {
     this.rawAccounts = response.data.accounts || [];
     this.studentRawAccounts = this.rawAccounts.filter((a) => a.typeCompte === 'E');
 
@@ -219,6 +213,7 @@ export class WrapDirecte {
       status: 'SUCCESS',
       token: response.token,
       accounts: this.studentAccounts,
+      faProof: fa ? encodeBase64(`${fa.cn}:${fa.cv}`) : undefined,
     };
   }
 

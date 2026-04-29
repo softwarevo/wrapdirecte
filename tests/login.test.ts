@@ -27,10 +27,16 @@ export async function loginTest() {
     console.log('Proposals:', loginResult.challenge?.proposals);
 
     const answer = await question('Please enter the answer: ');
-    await client.submit2FA(answer);
+    const res = await client.submit2FA(answer);
     console.log('2FA submitted.');
+    if (res.faProof) {
+      console.log('Retrieved faProof:', res.faProof);
+    }
   } else {
     console.log('Connected successfully!');
+    if (loginResult.faProof) {
+      console.log('Retrieved faProof:', loginResult.faProof);
+    }
   }
 
   const account = client.getAccount();

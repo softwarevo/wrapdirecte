@@ -1,4 +1,4 @@
-import { WrapDirecte } from '../src/index';
+import { WrapDirecte } from './src/index';
 
 async function exampleUsage() {
   const client = new WrapDirecte();

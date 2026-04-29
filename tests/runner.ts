@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import { loginTest } from './login.test';
-import { reloginTest } from './relogin.test';
 import { selectAccountTest } from './selectAccount.test';
 import { homeworkTest } from './homework.test';
 import { gradesTest } from './grades.test';
@@ -14,7 +13,6 @@ import { settingsTest } from './settings.test';
 
 const availableTests: Record<string, (client?: any) => Promise<void>> = {
   login: async () => { await loginTest(); },
-  relogin: async () => { const client = await loginTest(); await reloginTest(client); },
   selectAccount: async () => { const client = await loginTest(); await selectAccountTest(client); },
   homework: async () => { const client = await loginTest(); await homeworkTest(client); },
   grades: async () => { const client = await loginTest(); await gradesTest(client); },

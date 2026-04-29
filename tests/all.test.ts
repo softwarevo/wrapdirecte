@@ -13,7 +13,6 @@ async function run() {
   const client = await loginTest();
 
   // Uncomment the tests you want to run
-  // await reloginTest(client);
   // await selectAccountTest(client);
   // await homeworkTest(client);
   await gradesTest(client);

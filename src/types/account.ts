@@ -120,6 +120,7 @@ export interface LoginResult {
   status: 'SUCCESS' | '2FA_REQUIRED';
   token: string;
   accounts?: CleanAccount[];
+  faProof?: string;
   challenge?: {
     question: string;
     proposals: string[];
