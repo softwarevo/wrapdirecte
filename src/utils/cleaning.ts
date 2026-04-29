@@ -2,7 +2,7 @@ import { RawAccount, CleanAccount, RawModule, CleanModule, RawProfile, CleanProf
 import { normalizeDate } from './date';
 import { arrayBufferToBase64 } from './base64';
 
-export async function cleanAccount(raw: RawAccount): Promise<CleanAccount> {
+export async function cleanAccount(raw: RawAccount, headers?: Record<string, string>): Promise<CleanAccount> {
   return {
     loginId: raw.idLogin,
     id: raw.id,
@@ -25,7 +25,7 @@ export async function cleanAccount(raw: RawAccount): Promise<CleanAccount> {
     socketToken: raw.socketToken,
     modules: raw.modules.map(cleanModule),
     individualParams: cleanIndividualParams(raw.parametresIndividuels),
-    profile: await cleanProfile(raw.profile),
+    profile: await cleanProfile(raw.profile, headers),
   };
 }
 
@@ -39,16 +39,18 @@ function cleanModule(raw: RawModule): CleanModule {
   };
 }
 
-async function cleanProfile(raw: RawProfile): Promise<CleanProfile> {
-  const photoUrl = raw.photo.startsWith('//') ? `https:${raw.photo}` : raw.photo;
-  let photoB64: string | undefined = undefined;
+async function cleanProfile(raw: RawProfile, headers: Record<string, string> = {}): Promise<CleanProfile> {
+  const photoUrl = raw.photo ? (raw.photo.startsWith('//') ? `https:${raw.photo}` : raw.photo) : '';
+  let photoB64: string | null = null;
 
   if (photoUrl && !photoUrl.includes('no-photo')) {
     try {
-      const response = await fetch(photoUrl);
+      const response = await fetch(photoUrl, { headers });
       if (response.ok) {
         const buffer = await response.arrayBuffer();
-        photoB64 = arrayBufferToBase64(buffer);
+        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        const base64Data = arrayBufferToBase64(buffer);
+        photoB64 = `data:${contentType};base64,${base64Data}`;
       }
     } catch (e) {
       // Ignore fetch errors for photo

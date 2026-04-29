@@ -167,7 +167,7 @@ export class WrapDirecte {
     }
 
     this.rawAccount = account;
-    this.selectedAccount = await cleanAccount(account);
+    this.selectedAccount = await cleanAccount(account, this.http.getHeaders());
     this.initModules(account);
 
     return this.selectedAccount;
@@ -205,7 +205,7 @@ export class WrapDirecte {
     const selectedRaw = this.findAccount(preferredAccountId);
     this.rawAccount = selectedRaw;
     
-    this.studentAccounts = await Promise.all(this.studentRawAccounts.map(cleanAccount));
+    this.studentAccounts = await Promise.all(this.studentRawAccounts.map(a => cleanAccount(a, this.http.getHeaders())));
     this.selectedAccount = this.studentAccounts.find((a) => a.id === selectedRaw.id) || null;
 
     this.initModules(selectedRaw);
