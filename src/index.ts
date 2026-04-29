@@ -233,16 +233,21 @@ export class WrapDirecte {
     return this.studentRawAccounts[0];
   }
 
-  private initModules(account: RawAccount) {
-    this.homework = new HomeworkModule(this.http, account);
-    this.messaging = new MessagingModule(this.http, account);
-    this.grades = new GradesModule(this.http, account);
-    this.timetable = new TimetableModule(this.http, account);
-    this.absences = new AbsencesModule(this.http, account);
-    this.timeline = new TimelineModule(this.http, account);
-    this.documents = new DocumentsModule(this.http, account);
-    this.cloud = new CloudModule(this.http, account);
-    this.settings = new SettingsModule(this.http, account);
+  /**
+   * Initialize all modules.
+   * @param account The account to use for the modules. If not provided, uses the currently selected account.
+   */
+  public initModules(account?: RawAccount) {
+    const targetAccount = (account || this.rawAccount) as RawAccount;
+    this.homework = new HomeworkModule(this.http, targetAccount);
+    this.messaging = new MessagingModule(this.http, targetAccount);
+    this.grades = new GradesModule(this.http, targetAccount);
+    this.timetable = new TimetableModule(this.http, targetAccount);
+    this.absences = new AbsencesModule(this.http, targetAccount);
+    this.timeline = new TimelineModule(this.http, targetAccount);
+    this.documents = new DocumentsModule(this.http, targetAccount);
+    this.cloud = new CloudModule(this.http, targetAccount);
+    this.settings = new SettingsModule(this.http, targetAccount);
   }
 
   getAccount(): CleanAccount | null {

@@ -6,18 +6,18 @@ export interface BaseModuleOptions {
 }
 
 export abstract class BaseModule {
-  constructor(protected http: HttpClient, protected account: RawAccount) {}
+  constructor(protected http: HttpClient, protected account: RawAccount) { }
 
   protected get studentId(): number {
-    return this.account.id;
+    return this.account?.id as any;
   }
 
   protected get studentUsername(): string {
-    return this.account.identifiant;
+    return this.account?.identifiant as any;
   }
 
   protected get studentLoginId(): number {
-    return this.account.idLogin;
+    return this.account?.idLogin as any;
   }
 
   protected get apiVersion(): string {
