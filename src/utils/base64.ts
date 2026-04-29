@@ -35,3 +35,17 @@ export const decodeBase64 = (base64: string): string => {
     return decoder.decode(bytes);
   }
 };
+
+export const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(buffer).toString('base64');
+  } else {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+  }
+};

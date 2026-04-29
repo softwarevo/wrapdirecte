@@ -1,7 +1,8 @@
 import { RawAccount, CleanAccount, RawModule, CleanModule, RawProfile, CleanProfile, RawIndividualParams, CleanIndividualParams } from '../types/account';
 import { normalizeDate } from './date';
+import { arrayBufferToBase64 } from './base64';
 
-export function cleanAccount(raw: RawAccount): CleanAccount {
+export async function cleanAccount(raw: RawAccount): Promise<CleanAccount> {
   return {
     loginId: raw.idLogin,
     id: raw.id,
@@ -24,7 +25,7 @@ export function cleanAccount(raw: RawAccount): CleanAccount {
     socketToken: raw.socketToken,
     modules: raw.modules.map(cleanModule),
     individualParams: cleanIndividualParams(raw.parametresIndividuels),
-    profile: cleanProfile(raw.profile),
+    profile: await cleanProfile(raw.profile),
   };
 }
 
@@ -38,7 +39,22 @@ function cleanModule(raw: RawModule): CleanModule {
   };
 }
 
-function cleanProfile(raw: RawProfile): CleanProfile {
+async function cleanProfile(raw: RawProfile): Promise<CleanProfile> {
+  const photoUrl = raw.photo.startsWith('//') ? `https:${raw.photo}` : raw.photo;
+  let photoB64: string | undefined = undefined;
+
+  if (photoUrl && !photoUrl.includes('no-photo')) {
+    try {
+      const response = await fetch(photoUrl);
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        photoB64 = arrayBufferToBase64(buffer);
+      }
+    } catch (e) {
+      // Ignore fetch errors for photo
+    }
+  }
+
   return {
     gender: raw.sexe,
     timetableInfo: raw.infoEDT,
@@ -47,7 +63,8 @@ function cleanProfile(raw: RawProfile): CleanProfile {
     establishmentRne: raw.rneEtablissement,
     mobilePhone: raw.telPortable,
     realEstablishmentId: raw.idReelEtab,
-    photoUrl: raw.photo.startsWith('//') ? `https:${raw.photo}` : raw.photo,
+    photoUrl,
+    photoB64,
     isLearner: raw.estApprenant,
     class: {
       id: raw.classe?.id,

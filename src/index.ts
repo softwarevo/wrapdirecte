@@ -167,7 +167,7 @@ export class WrapDirecte {
     }
 
     this.rawAccount = account;
-    this.selectedAccount = cleanAccount(account);
+    this.selectedAccount = await cleanAccount(account);
     this.initModules(account);
 
     return this.selectedAccount;
@@ -194,7 +194,7 @@ export class WrapDirecte {
     this.settings = undefined;
   }
 
-  private handleLoginSuccess(response: any, preferredAccountId?: number, fa?: { cn: string; cv: string }): LoginResult {
+  private async handleLoginSuccess(response: any, preferredAccountId?: number, fa?: { cn: string; cv: string }): Promise<LoginResult> {
     this.rawAccounts = response.data.accounts || [];
     this.studentRawAccounts = this.rawAccounts.filter((a) => a.typeCompte === 'E');
 
@@ -204,8 +204,9 @@ export class WrapDirecte {
 
     const selectedRaw = this.findAccount(preferredAccountId);
     this.rawAccount = selectedRaw;
-    this.selectedAccount = cleanAccount(selectedRaw);
-    this.studentAccounts = this.studentRawAccounts.map(cleanAccount);
+    
+    this.studentAccounts = await Promise.all(this.studentRawAccounts.map(cleanAccount));
+    this.selectedAccount = this.studentAccounts.find((a) => a.id === selectedRaw.id) || null;
 
     this.initModules(selectedRaw);
 

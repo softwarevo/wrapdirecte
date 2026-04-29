@@ -107,6 +107,7 @@ export interface CleanProfile {
   mobilePhone: string;
   realEstablishmentId: string;
   photoUrl: string;
+  photoB64?: string;
   isLearner: boolean;
   class: {
     id: number;
