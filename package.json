@@ -1,6 +1,6 @@
 {
   "name": "wrapdirecte",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "The ULTIMATE wrapper for EcoleDirecte's private API.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -51,6 +51,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/softwarevo/wrapdirecte.git"
+    "url": "https://github.com/Scool-app/wrapDirecte.git"
   }
 }
