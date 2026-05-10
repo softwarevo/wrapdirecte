@@ -3,14 +3,15 @@ import { writeFileSync } from 'fs';
 
 export async function messagingTest(client: WrapDirecte) {
   console.log('--- Testing Messaging ---');
-  const messages = await client.messaging?.getMessages('2025-2026');
-  console.log('Messages fetched:', messages?.length, 'messages');
+  const messagesResult = await client.messaging?.getMessages('2025-2026');
+  console.log('Messages fetched:', Object.keys(messagesResult?.messages || {}).length, 'types');
+  console.log('Folders fetched:', messagesResult?.folders?.length, 'folders');
 
   const folderMessages = await client.messaging?.getMessagesByFolder(0);
   console.log('Folder messages fetched:', folderMessages?.length, 'messages');
 
   const data = {
-    messages,
+    messagesResult,
     folderMessages
   };
 

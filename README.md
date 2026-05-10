@@ -99,9 +99,15 @@ After a successful login, these modules are accessible via `client.<module>`:
 - `getGrades(year)`: Returns grades, periods, and settings.
 
 ### Messaging (`client.messaging`)
-- `getMessages(year)`: Returns inbox, sent, drafts, and archives.
-- `getMessageContent(id, year)`: Get full body and attachments.
+- `getMessages(year)`: Returns inbox, sent, drafts, archives, and folders.
+- `getMessagesByFolder(folderId)`: Get messages from a specific folder.
+- `getMessageContent(id, year, options?)`: Get full body and attachments. Option `{ markAsUnread: true }` keeps the message unread.
 - `sendMessage(params)`: Compose and send new messages.
+- `markAsRead(ids, year)` / `markAsUnread(ids, year)`: Batch update read status.
+- `archiveMessages(ids, year)` / `unarchiveMessages(ids, year)`: Batch archive operations.
+- `moveMessages(ids, folderId)`: Move messages to a folder (0 for inbox).
+- `createFolder(name)`: Create a new message folder.
+- `deleteFolder(folderId)`: Delete a folder.
 - `getContacts(type)`: Fetch available recipients.
 
 ### Timetable (`client.timetable`)
@@ -159,6 +165,12 @@ interface CleanMessage {
   hasAttachments: boolean;
   attachments: CleanAttachment[];
   type: 'received' | 'sent' | 'draft' | 'archived' | 'classeur';
+  folderId?: number;
+}
+
+interface CleanFolder {
+  id: number;
+  name: string;
 }
 ```
 </details>
