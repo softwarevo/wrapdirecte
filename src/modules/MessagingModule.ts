@@ -13,6 +13,12 @@ export interface CleanMessage {
   hasAttachments: boolean;
   attachments: CleanAttachment[];
   type: 'received' | 'sent' | 'draft' | 'archived' | 'classeur';
+  folderId?: number;
+}
+
+export interface CleanFolder {
+  id: number;
+  name: string;
 }
 
 export interface CleanContact {
@@ -41,11 +47,21 @@ export class MessagingModule extends BaseModule {
 
     if (options.raw) return response.data;
 
-    const result: Record<string, CleanMessage[]> = {};
+    const result: {
+      messages: Record<string, CleanMessage[]>;
+      folders: CleanFolder[];
+    } = {
+      messages: {},
+      folders: (response.data.classeurs || []).map((c: any) => ({
+        id: c.id,
+        name: c.libelle,
+      })),
+    };
+
     const types = ['received', 'sent', 'draft', 'archived'];
 
     types.forEach(type => {
-      result[type] = (response.data.messages[type] || []).map((m: any) => this.cleanMessage(m, type as any));
+      result.messages[type] = (response.data.messages[type] || []).map((m: any) => this.cleanMessage(m, type as any));
     });
 
     return result;
@@ -80,13 +96,21 @@ export class MessagingModule extends BaseModule {
     return messagesList.map((m: any) => this.cleanMessage(m, 'classeur'));
   }
 
-  async getMessageContent(messageId: number, year: string, options: BaseModuleOptions = {}): Promise<any> {
+  async getMessageContent(
+    messageId: number,
+    year: string,
+    options: BaseModuleOptions & { markAsUnread?: boolean } = {}
+  ): Promise<any> {
     const response = await this.http.request<any>(
       'POST',
       `/eleves/${this.studentId}/messages/${messageId}.awp`,
       { anneeMessages: year },
       { verbe: 'get', mode: 'destinataire', v: this.apiVersion }
     );
+
+    if (options.markAsUnread) {
+      await this.markAsUnread([messageId], year);
+    }
 
     if (options.raw) return response.data;
 
@@ -112,6 +136,7 @@ export class MessagingModule extends BaseModule {
         type: f.type,
       })),
       type,
+      folderId: m.idClasseur,
     };
   }
 
@@ -175,5 +200,89 @@ export class MessagingModule extends BaseModule {
       { verbe: 'get', v: this.apiVersion }
     );
     return response.data.contacts;
+  }
+
+  async markAsRead(ids: number[], year: string): Promise<void> {
+    await this.http.request(
+      'POST',
+      `/eleves/${this.studentId}/messages.awp`,
+      {
+        action: 'marquerCommeLu',
+        ids,
+        anneeMessages: year,
+      },
+      { verbe: 'put', v: this.apiVersion }
+    );
+  }
+
+  async markAsUnread(ids: number[], year: string): Promise<void> {
+    await this.http.request(
+      'POST',
+      `/eleves/${this.studentId}/messages.awp`,
+      {
+        action: 'marquerCommeNonLu',
+        ids,
+        anneeMessages: year,
+      },
+      { verbe: 'put', v: this.apiVersion }
+    );
+  }
+
+  async archiveMessages(ids: number[], year: string): Promise<void> {
+    await this.http.request(
+      'POST',
+      `/eleves/${this.studentId}/messages.awp`,
+      {
+        action: 'archiver',
+        ids,
+        anneeMessages: year,
+      },
+      { verbe: 'put', v: this.apiVersion }
+    );
+  }
+
+  async unarchiveMessages(ids: number[], year: string): Promise<void> {
+    await this.http.request(
+      'POST',
+      `/eleves/${this.studentId}/messages.awp`,
+      {
+        action: 'desarchiver',
+        ids,
+        anneeMessages: year,
+      },
+      { verbe: 'put', v: this.apiVersion }
+    );
+  }
+
+  async moveMessages(ids: number[], folderId: number): Promise<void> {
+    await this.http.request(
+      'POST',
+      `/eleves/${this.studentId}/messages.awp`,
+      {
+        action: 'deplacer',
+        idClasseur: folderId,
+        ids: ids.map(id => `${id}:-1`),
+      },
+      { verbe: 'put', v: this.apiVersion }
+    );
+  }
+
+  async createFolder(name: string): Promise<number> {
+    const response = await this.http.request<any>(
+      'POST',
+      '/messagerie/classeurs.awp',
+      { libelle: name },
+      { verbe: 'post', v: this.apiVersion }
+    );
+    return response.data.id;
+  }
+
+  async deleteFolder(folderId: number): Promise<void> {
+    await this.http.request(
+      'POST',
+      `/messagerie/classeur/${folderId}.awp`,
+      {},
+      { verbe: 'delete', v: this.apiVersion }
+    );
   }
 }
